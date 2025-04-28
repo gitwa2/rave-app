@@ -12,6 +12,7 @@ import {
     Image
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import axiosInstance from '@/axiosConfig';
 import LanguageSelector from "@/components/LanguageSelector";
 
 export default function HomeScreen() {
@@ -35,6 +36,27 @@ export default function HomeScreen() {
         };
     }, []);
 
+    const handleRegister = async () => {
+        try {
+            const payload = {
+                name: name,
+                code: hasGroupCode ? code : '',
+            };
+
+            const response = await axiosInstance.post('https://raverom.top/api/register', payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Registration successful:', response.data);
+            // Navigate to the next screen or handle success
+            navigation.navigate('(pages)/invite');
+        } catch (error) {
+            console.error('Registration failed:', error);
+            // Handle error (e.g., show an error message)
+        }
+    };
 
     return (
         <KeyboardAvoidingView
@@ -43,14 +65,14 @@ export default function HomeScreen() {
         >
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.flagContainer}>
-                   <LanguageSelector/>
+                    <LanguageSelector/>
                 </View>
 
                 {!isKeyboardVisible && (
-                <View style={styles.logoContainer}>
-                    <Image source={require('@/assets/images/logo.png')} style={{ alignSelf: 'center', width: 180, height: 180 }} />
-                    <Text style={{ color: 'white', fontSize: 30, fontWeight: 'bold' }}>RAVEROOM</Text>
-                </View>)}
+                    <View style={styles.logoContainer}>
+                        <Image source={require('@/assets/images/logo.png')} style={{ alignSelf: 'center', width: 180, height: 180 }} />
+                        <Text style={{ color: 'white', fontSize: 30, fontWeight: 'bold' }}>RAVEROOM</Text>
+                    </View>)}
 
                 <View style={styles.formContainer}>
                     <Text style={styles.label}>Your name</Text>
@@ -88,7 +110,7 @@ export default function HomeScreen() {
 
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => navigation.navigate('(pages)/invite')}
+                        onPress={handleRegister}
                     >
                         <Text style={styles.buttonText}>Let's go party! 🎉</Text>
                     </TouchableOpacity>
@@ -130,7 +152,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     formContainer: {
-        flex: 2, // Increased flex priority
+        flex: 2,
         marginTop: 40,
         width: '80%',
         backgroundColor: 'black',
