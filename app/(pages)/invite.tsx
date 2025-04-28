@@ -1,26 +1,50 @@
-import {Text, View, ScrollView, StyleSheet, Platform, TouchableOpacity} from 'react-native';
-import React from "react";
+import { Text, View, ScrollView, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { getUser, userEventEmitter } from '@/app/storage';
 
 export default function InviteScreen() {
+    const [code, setCode] = React.useState<string>('');
+
+    const fetchUser = async () => {
+        const user = await getUser();
+        console.log(user);
+        setCode(user?.code || '');
+    };
+
+    useEffect(() => {
+        fetchUser(); // Initial fetch
+
+        const listener = () => {
+            fetchUser(); // Re-fetch when user data changes
+        };
+
+        userEventEmitter.on('userDataChanged', listener);
+
+        return () => {
+            userEventEmitter.off('userDataChanged', listener); // Cleanup listener
+        };
+    }, []);
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <View style={{flex:1, padding:20, marginTop:50}}>
-                <Text style={{fontSize:34, fontFamily: 'SpaceMono', color:'#999'}}><Text style={{fontWeight: 'bold',color:'#fff'}}>You are</Text> the group master.<Text style={{fontWeight: 'bold',color:'#fff'}}>Share</Text> the <Text style={{fontWeight: 'bold',color:'#fff'}}>party code</Text> with your friends. </Text>
+            <View style={{ flex: 1, padding: 20, marginTop: 50 }}>
+                <Text style={{ fontSize: 34, fontFamily: 'SpaceMono', color: '#999' }}>
+                    <Text style={{ fontWeight: 'bold', color: '#fff' }}>You are</Text> the group master.
+                    <Text style={{ fontWeight: 'bold', color: '#fff' }}>Share</Text> the{' '}
+                    <Text style={{ fontWeight: 'bold', color: '#fff' }}>party code</Text> with your friends.
+                </Text>
             </View>
-            <View style={{flex:1,alignItems:'center', justifyContent:'center'}}>
-                <Text style={{fontWeight: 'bold',fontSize:55,color:'#fff'}}>H584</Text>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 55, color: '#fff' }}>{code}</Text>
             </View>
-            <View style={{width:'100%'}}>
-                <TouchableOpacity
-                    style={styles.button}
-                >
+            <View style={{ width: '100%' }}>
+                <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText}>🕶️ Start</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -29,9 +53,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: Platform.OS === 'ios' ? 40 : 0,
-        paddingLeft:45,
-        paddingRight:45,
-        paddingBottom:45,
+        paddingLeft: 45,
+        paddingRight: 45,
+        paddingBottom: 45,
     },
     button: {
         backgroundColor: 'white',
@@ -46,6 +70,6 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         fontWeight: 'bold',
-        fontFamily: 'SpaceMono'
+        fontFamily: 'SpaceMono',
     },
 });

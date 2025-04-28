@@ -16,7 +16,7 @@ export default function LanguageSelector() {
             if (user?.language) {
                 setSelectedLanguage(user.language);
             }else{
-                setUser(0, '', 0);
+                setUser(0, '', '');
             }
         })();
     }, []);

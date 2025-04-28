@@ -14,6 +14,7 @@ import {
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import axiosInstance from '@/axiosConfig';
 import LanguageSelector from "@/components/LanguageSelector";
+import {setToken} from "@/app/storage";
 
 export default function HomeScreen() {
     const [name, setName] = useState('');
@@ -43,14 +44,13 @@ export default function HomeScreen() {
                 code: hasGroupCode ? code : '',
             };
 
-            const response = await axiosInstance.post('https://raverom.top/api/register', payload, {
+            const response = await axiosInstance.post('register', payload, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
 
-            console.log('Registration successful:', response.data);
-            // Navigate to the next screen or handle success
+            setToken(response.data.token);
             navigation.navigate('(pages)/invite');
         } catch (error) {
             console.error('Registration failed:', error);
