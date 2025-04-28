@@ -71,7 +71,10 @@ export default function HomeScreen() {
                 {!isKeyboardVisible && (
                     <View style={styles.logoContainer}>
                         <Image source={require('@/assets/images/logo.png')} style={{ alignSelf: 'center', width: 180, height: 180 }} />
-                        <Text style={{ color: 'white', fontSize: 30, fontWeight: 'bold' }}>RAVEROOM</Text>
+                        <View style={{ flexDirection:'row' }}>
+                            <Text style={{ color: 'white', fontSize: 34, fontWeight: 'bold' }}>RAVE</Text>
+                            <Text style={{ backgroundColor:'red',position:'relative',top:19,fontSize: 20, height:24,fontWeight: 'bold'}}>ROOM</Text>
+                        </View>
                     </View>)}
 
                 <View style={styles.formContainer}>

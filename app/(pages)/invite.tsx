@@ -27,15 +27,15 @@ export default function InviteScreen() {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <View style={{ flex: 1, padding: 20, marginTop: 50 }}>
-                <Text style={{ fontSize: 34, fontFamily: 'SpaceMono', color: '#999' }}>
-                    <Text style={{ fontWeight: 'bold', color: '#fff' }}>You are</Text> the group master.
-                    <Text style={{ fontWeight: 'bold', color: '#fff' }}>Share</Text> the{' '}
-                    <Text style={{ fontWeight: 'bold', color: '#fff' }}>party code</Text> with your friends.
+            <View style={{ flex: 2, padding: 20, marginTop: 50, alignItems:'center', justifyContent: 'center'  }}>
+                <Text style={{ fontSize: 32, fontFamily: 'SpaceMono', color: '#999' }}>
+                    <Text style={{ fontWeight: 'bold', color: '#fff'}}>You are</Text> the group master.
+                    <Text style={{ fontWeight: 'bold', color: '#fff'}}>Share</Text> the{' '}
+                    <Text style={{ fontWeight: 'bold', color: '#000', backgroundColor:'red' }}>party code</Text> with your friends.
                 </Text>
             </View>
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 55, color: '#fff' }}>{code}</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 55, color: 'red' }}>{code}</Text>
             </View>
             <View style={{ width: '100%' }}>
                 <TouchableOpacity style={styles.button}>
