@@ -1,0 +1,195 @@
+import React, { useState, useEffect } from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    ScrollView,
+    Platform,
+    Keyboard,
+    KeyboardAvoidingView,
+    Image
+} from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import LanguageSelector from "@/components/LanguageSelector";
+
+export default function HomeScreen() {
+    const [name, setName] = useState('');
+    const [code, setCode] = useState('');
+    const [hasGroupCode, setHasGroupCode] = useState(false);
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+    const navigation = useNavigation<NavigationProp<Record<string, undefined>>>();
+
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboardVisible(true);
+        });
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboardVisible(false);
+        });
+
+        return () => {
+            showSubscription.remove();
+            hideSubscription.remove();
+        };
+    }, []);
+
+
+    return (
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={styles.flagContainer}>
+                   <LanguageSelector/>
+                </View>
+
+                {!isKeyboardVisible && (
+                <View style={styles.logoContainer}>
+                    <Image source={require('@/assets/images/logo.png')} style={{ alignSelf: 'center', width: 180, height: 180 }} />
+                    <Text style={{ color: 'white', fontSize: 30, fontWeight: 'bold' }}>RAVEROOM</Text>
+                </View>)}
+
+                <View style={styles.formContainer}>
+                    <Text style={styles.label}>Your name</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={name}
+                        onChangeText={setName}
+                        placeholder=""
+                    />
+
+                    <View style={styles.checkboxContainer}>
+                        <TouchableOpacity
+                            onPress={() => setHasGroupCode(!hasGroupCode)}
+                            style={styles.checkbox}
+                        >
+                            {hasGroupCode && <View style={styles.checkedBox} />}
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setHasGroupCode(!hasGroupCode)}>
+                            <Text style={styles.checkboxText}>Do you have a party group code?</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {hasGroupCode && (
+                        <TextInput
+                            style={[styles.input, { textAlign: 'center' }]}
+                            placeholder="Enter your party code"
+                            placeholderTextColor="gray"
+                            maxLength={6}
+                            value={code}
+                            onChangeText={(text) => {
+                                setCode(text);
+                            }}
+                        />
+                    )}
+
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => navigation.navigate('(pages)/invite')}
+                    >
+                        <Text style={styles.buttonText}>Let's go party! 🎉</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: 'black',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: Platform.OS === 'ios' ? 40 : 0,
+    },
+    flagContainer: {
+        flexDirection: 'row',
+        marginTop: 40,
+        paddingLeft: 20,
+        width: '100%',
+    },
+    flag: {
+        width: 40,
+        height: 40,
+        marginRight: 20,
+        fontSize: 40,
+    },
+    logoContainer: {
+        flex: 1,
+        marginTop: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    mainText: {
+        color: 'white',
+        fontSize: 50,
+        fontWeight: 'bold',
+    },
+    formContainer: {
+        flex: 2, // Increased flex priority
+        marginTop: 40,
+        width: '80%',
+        backgroundColor: 'black',
+    },
+    label: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'SpaceMono',
+        marginBottom: 5,
+    },
+    input: {
+        height: 40,
+        borderColor: 'white',
+        borderWidth: 1,
+        borderRadius: 5,
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 20,
+        paddingLeft: 10,
+        marginBottom: 20,
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderWidth: 1,
+        borderColor: 'white',
+        marginRight: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    checkedBox: {
+        width: 12,
+        height: 12,
+        backgroundColor: 'white',
+    },
+    checkboxText: {
+        color: 'white',
+        fontFamily: 'SpaceMono',
+        fontSize: 15,
+    },
+    button: {
+        backgroundColor: 'white',
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonText: {
+        color: 'black',
+        fontSize: 22,
+        paddingTop: 5,
+        paddingBottom: 5,
+        fontWeight: 'bold',
+        fontFamily: 'SpaceMono'
+    },
+});
