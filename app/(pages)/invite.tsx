@@ -1,9 +1,11 @@
 import { Text, View, ScrollView, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import { getUser, userEventEmitter } from '@/app/storage';
 
 export default function InviteScreen() {
     const [code, setCode] = React.useState<string>('');
+    const router = useRouter();
 
     const fetchUser = async () => {
         const user = await getUser();
@@ -38,7 +40,7 @@ export default function InviteScreen() {
                 <Text style={{ fontWeight: 'bold', fontSize: 55, color: 'red' }}>{code}</Text>
             </View>
             <View style={{ width: '100%' }}>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push('/home')}>
                     <Text style={styles.buttonText}>🕶️ Start</Text>
                 </TouchableOpacity>
             </View>

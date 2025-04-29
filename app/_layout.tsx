@@ -54,6 +54,12 @@ export default function RootLayout() {
           <Stack.Screen name="(pages)/index" />
           <Stack.Screen name="(pages)/explore" />
           <Stack.Screen name="(pages)/invite" />
+          <Stack.Screen name="(pages)/home" options={{
+            gestureEnabled: false, // Disable swipe back gesture
+          }} />
+          <Stack.Screen name="(pages)/friends" options={{
+            gestureEnabled: false, // Disable swipe back gesture
+          }} />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
