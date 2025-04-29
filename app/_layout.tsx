@@ -1,4 +1,5 @@
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
+import { useRouter, usePathname } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,6 +12,9 @@ import axiosInstance from "@/axiosConfig";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -18,21 +22,32 @@ export default function RootLayout() {
   const fetchUser = async () => {
     const user = await getUser();
     if (user?.token) {
-      const response = await axiosInstance.get('me');
-      const res = response.data;
-      setUser(res.id, res.name, res.code);
+      try {
+        const response = await axiosInstance.get('me');
+        const res = response.data;
+        setUser(res.id, res.name, res.code);
+
+        if (pathname === '/' || pathname === '/invite') {
+          router.push('/home');
+        }
+      } catch (e) {
+        console.log('Error fetching user data:', e);
+      }
+    } else {
+      if (pathname !== '/') {
+        router.push('/');
+      }
     }
   };
 
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      fetchUser(); // Fetch user only after fonts are loaded
     }
   }, [loaded]);
 
   useEffect(() => {
-    fetchUser(); // Initial fetch
-
     const listener = () => {
       fetchUser(); // Re-fetch when user data changes
     };
@@ -54,12 +69,18 @@ export default function RootLayout() {
           <Stack.Screen name="(pages)/index" />
           <Stack.Screen name="(pages)/explore" />
           <Stack.Screen name="(pages)/invite" />
-          <Stack.Screen name="(pages)/home" options={{
-            gestureEnabled: false, // Disable swipe back gesture
-          }} />
-          <Stack.Screen name="(pages)/friends" options={{
-            gestureEnabled: false, // Disable swipe back gesture
-          }} />
+          <Stack.Screen
+              name="(pages)/home"
+              options={{
+                gestureEnabled: false, // Disable swipe back gesture
+              }}
+          />
+          <Stack.Screen
+              name="(pages)/friends"
+              options={{
+                gestureEnabled: false, // Disable swipe back gesture
+              }}
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
