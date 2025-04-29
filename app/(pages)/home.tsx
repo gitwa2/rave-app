@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, Alert, SafeAreaView,TouchableOpacity, Platform, StatusBar, Image} from 'react-native';
+import {View,ScrollView, Text, StyleSheet, Alert, SafeAreaView,TouchableOpacity, Platform, StatusBar, Image} from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Tab from '@/components/Tab';
 import { clearUser, getUser } from '@/app/storage';
@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 export default function HomeScreen() {
     const [activeTab, setActiveTab] = useState('Home');
     const [status, setStatus] = useState('');
+    const [needDrink, setNeedDrink] = useState(false);
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
     const router = useRouter();
@@ -75,7 +76,11 @@ export default function HomeScreen() {
                     </TouchableOpacity>
 
                 </View>
-                <View style={styles.main}>
+
+
+                {activeTab === 'Home' ? (
+                <View  style={styles.main}>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                     {items.map((item, index) => (
                         <TouchableOpacity
                             key={index}
@@ -91,7 +96,7 @@ export default function HomeScreen() {
                             <Text
                                 style={[
                                     styles.listItemText,
-                                    item.key === status && { fontSize: 44, color: '#fff' },
+                                    item.key === status && { fontSize: 40, color: '#fff' },
                                 ]}
                             >
                                 {item.name}
@@ -99,11 +104,29 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     ))}
                     <TouchableOpacity
-                        style={[styles.listItem,{ borderColor: 'blue'}]}
+                        onPress={() => setNeedDrink(!needDrink)}
+                        style={[styles.listItem,{
+                            borderColor: 'blue',
+                            backgroundColor: needDrink ? 'blue' : '#000'
+                        }]}
                     >
-                        <Text style={styles.listItemText}>💧 Water, please</Text>
+                        <Text style={[
+                            styles.listItemText,{
+                                color: needDrink ? '#fff' : '#999',
+                                fontSize: needDrink ? 30 : 25,
+                            }
+                        ]}>💧 Water, please</Text>
                     </TouchableOpacity>
+                </ScrollView>
                 </View>
+                ): (<View  style={styles.main}>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={styles.text}>You are in {status}!</Text>
+                    </ScrollView>
+                </View>)}
+
+
+
                 <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
             </View>
         </SafeAreaView>
@@ -135,10 +158,7 @@ const styles = StyleSheet.create({
     main: {
         width: '100%',
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingRight: 20,
-        paddingLeft: 20,
+        padding:20
     },
     listItem: {
         marginBottom: 10,
