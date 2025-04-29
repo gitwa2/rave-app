@@ -17,7 +17,7 @@ export default function RootLayout() {
 
   const fetchUser = async () => {
     const user = await getUser();
-    if (user?.token !== '') {
+    if (user?.token) {
       const response = await axiosInstance.get('me');
       const res = response.data;
       setUser(res.id, res.name, res.code);

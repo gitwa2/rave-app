@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Alert, Platform } from 'react-native';
-import { getUser } from '@/app/storage';
+import { getUser,clearUser } from '@/app/storage';
 
 const axiosInstance = axios.create({
     baseURL: 'https://raverom.top/api/',
@@ -10,6 +10,22 @@ const axiosInstance = axios.create({
 });
 
 const requestCache = new Map();
+
+
+axiosInstance.interceptors.response.use(
+    response => response, // Pass through successful responses
+    async error => {
+        if (error?.response?.status === 401) {
+            await clearUser(); // Clear user data
+            if (Platform.OS === 'web') {
+                window.location.href = '/'; // Navigate to root for web
+            } else {
+                Alert.alert('Session Expired', 'You have been logged out.');
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 axiosInstance.interceptors.request.use(
     async config => {
