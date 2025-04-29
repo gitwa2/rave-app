@@ -17,17 +17,21 @@ export default function Tab({ activeTab, setActiveTab }: { activeTab: string; se
 const styles = StyleSheet.create({
     tabContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        backgroundColor: '#c90',
-        paddingVertical: 20,
+        justifyContent: "space-around",
         width: '100%',
     },
     tabText: {
-        fontSize: 28,
+        fontFamily: 'SpaceMono',
+        fontSize: 30,
         fontWeight: 'bold',
         color: '#888',
+        borderTopWidth: 4,
+        padding: 10,
+        paddingBottom:20,
     },
     activeTab: {
         color: 'white',
+        borderTopColor: 'red',
+        borderTopWidth: 4,
     },
 });

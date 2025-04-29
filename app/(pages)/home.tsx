@@ -1,36 +1,109 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import {View, Text, StyleSheet, Alert, SafeAreaView,TouchableOpacity, Platform, StatusBar, Image} from 'react-native';
+import React, { useState, useEffect } from 'react';
 import Tab from '@/components/Tab';
-import { clearUser } from '@/app/storage';
+import { clearUser, getUser } from '@/app/storage';
 import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
     const [activeTab, setActiveTab] = useState('Home');
+    const [name, setName] = useState('');
+    const [code, setCode] = useState('');
     const router = useRouter();
 
+
     const handleLogout = async () => {
-        await clearUser();
-        router.push('/');
+        if (Platform.OS === 'web') {
+            const confirm = window.confirm("Are you sure you want to log out?");
+            if (confirm) {
+                await clearUser();
+                router.push('/');
+            }
+        } else {
+            Alert.alert(
+                "Confirm Logout",
+                "Are you sure you want to log out?",
+                [
+                    {
+                        text: "Cancel",
+                        style: "cancel",
+                    },
+                    {
+                        text: "Logout",
+                        onPress: async () => {
+                            await clearUser();
+                            router.push('/');
+                        },
+                        style: "destructive",
+                    },
+                ]
+            );
+        }
     };
 
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const user = await getUser();
+            if (user) {
+                setName(user.name || '');
+                setCode(user.code || '');
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Welcome to the Home Page!</Text>
-            <TouchableOpacity onPress={handleLogout}>
-                <Text style={styles.text}>logout</Text>
-            </TouchableOpacity>
-            <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
-        </View>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={{ fontSize: 30, color: '#fff' }}>{name}</Text>
+                    <Text style={{ fontSize: 30, color: 'red', paddingRight: 10, paddingLeft: 10 }}>
+                        {code}
+                    </Text>
+
+
+                    <TouchableOpacity onPress={handleLogout}>
+                        <Image source={require('@/assets/images/logout.png')} style={{ alignSelf: 'center', width: 40, height: 40 }} />
+                    </TouchableOpacity>
+
+                </View>
+                <View style={styles.main}>
+                    <Text style={styles.text}>Home</Text>
+                </View>
+                <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
+            </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: 'black',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'black',
-        paddingBottom: 20,
+    },
+    header: {
+        backgroundColor: '#222',
+        height: 100,
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingLeft: 20,
+        paddingRight: 20,
+    },
+    main: {
+        width: '100%',
+        flex: 1,
+        backgroundColor: '#333',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     text: {
         color: 'white',

@@ -76,12 +76,6 @@ export default function RootLayout() {
                 gestureEnabled: false, // Disable swipe back gesture
               }}
           />
-          <Stack.Screen
-              name="(pages)/friends"
-              options={{
-                gestureEnabled: false, // Disable swipe back gesture
-              }}
-          />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />

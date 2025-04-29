@@ -9,7 +9,6 @@ export default function InviteScreen() {
 
     const fetchUser = async () => {
         const user = await getUser();
-        console.log(user);
         setCode(user?.code || '');
     };
 
