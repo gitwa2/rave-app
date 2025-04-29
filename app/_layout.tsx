@@ -27,8 +27,8 @@ export default function RootLayout() {
         const res = response.data;
         setUser(res.id, res.name, res.code);
 
-        if (pathname === '/' || pathname === '/invite') {
-          router.push('/home');
+        if (pathname === '/') {
+          router.push('/invite');
         }
       } catch (e) {
         console.log('Error fetching user data:', e);
@@ -66,8 +66,9 @@ export default function RootLayout() {
   return (
       <ThemeProvider value={DarkTheme}>
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(pages)/index" />
-          <Stack.Screen name="(pages)/explore" />
+          <Stack.Screen name="(pages)/index" options={{
+            gestureEnabled: false, // Disable swipe back gesture
+          }} />
           <Stack.Screen name="(pages)/invite" />
           <Stack.Screen
               name="(pages)/home"
