@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
     const [activeTab, setActiveTab] = useState('Home');
+    const [status, setStatus] = useState('');
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
     const router = useRouter();
@@ -52,6 +53,13 @@ export default function HomeScreen() {
         fetchUserData();
     }, []);
 
+    const items = [
+        {key: 'Main', name: 'First dance floor'},
+        {key: 'Second', name: 'Second dance floor'},
+        {key: 'Break', name: "I'm taking a break"},
+        {key: 'Home', name: "I'm going home"},
+    ];
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
@@ -68,7 +76,33 @@ export default function HomeScreen() {
 
                 </View>
                 <View style={styles.main}>
-                    <Text style={styles.text}>Home</Text>
+                    {items.map((item, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => setStatus(item.key)}
+                            style={[
+                                styles.listItem,
+                                {
+                                    backgroundColor: item.key === status ? 'red' : '#000',
+                                    borderColor: item.key === status ? 'red' : '#444',
+                                },
+                            ]}
+                        >
+                            <Text
+                                style={[
+                                    styles.listItemText,
+                                    item.key === status && { fontSize: 44, color: '#fff' },
+                                ]}
+                            >
+                                {item.name}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                    <TouchableOpacity
+                        style={[styles.listItem,{ borderColor: 'blue'}]}
+                    >
+                        <Text style={styles.listItemText}>💧 Water, please</Text>
+                    </TouchableOpacity>
                 </View>
                 <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
             </View>
@@ -101,9 +135,23 @@ const styles = StyleSheet.create({
     main: {
         width: '100%',
         flex: 1,
-        backgroundColor: '#333',
         justifyContent: 'center',
         alignItems: 'center',
+        paddingRight: 20,
+        paddingLeft: 20,
+    },
+    listItem: {
+        marginBottom: 10,
+        width: '100%',
+        alignItems: 'center',
+        borderWidth:2,
+        borderColor:'#444',
+    },
+    listItemText:{
+        color: '#888',
+        padding: 10,
+        fontSize: 25,
+        fontFamily: 'SpaceMono',
     },
     text: {
         color: 'white',
