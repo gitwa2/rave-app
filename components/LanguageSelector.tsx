@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { setLanguage,setUser, getUser } from '@/app/storage';
 
 const LANGUAGES = [
     { code: 'en', flag: '🇬🇧' },
@@ -10,19 +9,8 @@ const LANGUAGES = [
 export default function LanguageSelector() {
     const [selectedLanguage, setSelectedLanguage] = useState<string>('en');
 
-    useEffect(() => {
-        (async () => {
-            const user = await getUser();
-            if (user?.language) {
-                setSelectedLanguage(user.language);
-            }else{
-                setUser(0, '', '');
-            }
-        })();
-    }, []);
 
     const handleLanguageSelect = async (language: string) => {
-        await setLanguage(language);
         setSelectedLanguage(language);
     };
 

@@ -12,9 +12,10 @@ import {
     Image
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import axiosInstance from '@/axiosConfig';
+import axiosInstance from '@/app/axiosConfig';
 import LanguageSelector from "@/components/LanguageSelector";
-import {setToken} from "@/app/storage";
+import useUserStore from '@/app/store/userStore';
+
 
 export default function HomeScreen() {
     const [name, setName] = useState('');
@@ -22,6 +23,7 @@ export default function HomeScreen() {
     const [hasGroupCode, setHasGroupCode] = useState(false);
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
     const navigation = useNavigation<NavigationProp<Record<string, undefined>>>();
+    const setUser = useUserStore((state) => state.setUser);
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
@@ -37,6 +39,7 @@ export default function HomeScreen() {
         };
     }, []);
 
+
     const handleRegister = async () => {
         try {
             const payload = {
@@ -44,17 +47,18 @@ export default function HomeScreen() {
                 code: hasGroupCode ? code : '',
             };
 
-            const response = await axiosInstance.post('register', payload, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            const {data} = await axiosInstance.post('register', payload);
+            setUser({
+                token: data.token,
+                id: data.id,
+                name: data.name,
+                code: data.code,
+                status: "",
+                need_drink: false,
             });
-
-            setToken(response.data.token);
             navigation.navigate('(pages)/invite');
         } catch (error) {
             console.error('Registration failed:', error);
-            // Handle error (e.g., show an error message)
         }
     };
 
@@ -76,6 +80,7 @@ export default function HomeScreen() {
                             <Text style={{ backgroundColor:'red',position:'relative',top:19,fontSize: 20, height:24,fontWeight: 'bold'}}>ROOM</Text>
                         </View>
                     </View>)}
+
 
                 <View style={styles.formContainer}>
                     <Text style={styles.label}>Your name</Text>

@@ -1,30 +1,11 @@
 import { Text, View, ScrollView, StyleSheet, Platform, TouchableOpacity } from 'react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'expo-router';
-import { getUser, userEventEmitter } from '@/app/storage';
+import useUserStore from "@/app/store/userStore";
 
 export default function InviteScreen() {
-    const [code, setCode] = React.useState<string>('');
+    const user = useUserStore((state) => state.user);
     const router = useRouter();
-
-    const fetchUser = async () => {
-        const user = await getUser();
-        setCode(user?.code || '');
-    };
-
-    useEffect(() => {
-        fetchUser(); // Initial fetch
-
-        const listener = () => {
-            fetchUser(); // Re-fetch when user data changes
-        };
-
-        userEventEmitter.on('userDataChanged', listener);
-
-        return () => {
-            userEventEmitter.off('userDataChanged', listener); // Cleanup listener
-        };
-    }, []);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -36,7 +17,7 @@ export default function InviteScreen() {
                 </Text>
             </View>
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 55, color: 'red' }}>{code}</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 55, color: 'red' }}>{user?.code}</Text>
             </View>
             <View style={{ width: '100%' }}>
                 <TouchableOpacity style={styles.button} onPress={() => router.push('/home')}>

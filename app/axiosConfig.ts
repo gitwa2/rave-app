@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Alert, Platform } from 'react-native';
-import { getUser,clearUser } from '@/app/storage';
+import useUserStore from '@/app/store/userStore';
 
 const axiosInstance = axios.create({
     baseURL: 'https://raverom.top/api/',
@@ -16,7 +16,7 @@ axiosInstance.interceptors.response.use(
     response => response, // Pass through successful responses
     async error => {
         if (error?.response?.status === 401) {
-            await clearUser(); // Clear user data
+            useUserStore.getState().clearUser();
             if (Platform.OS === 'web') {
                 window.location.href = '/'; // Navigate to root for web
             } else {
@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(
 
 axiosInstance.interceptors.request.use(
     async config => {
-        const user = await getUser();
+        const user = useUserStore.getState().user; // Access user from userStore
         if (user?.token) {
             config.headers['Authorization'] = `Bearer ${user.token}`;
         }
