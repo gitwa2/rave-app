@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Tab from '@/components/Tab';
 import { useRouter } from 'expo-router';
 import useUserStore from "@/app/store/userStore";
+import axiosInstance from "@/app/axiosConfig";
 
 interface Friend {
     id: number;
@@ -15,6 +16,21 @@ export default function HomeScreen() {
     const [activeTab, setActiveTab] = useState('Home');
     const router = useRouter();
     const user = useUserStore((state) => state.user);
+    const updateField = useUserStore((state) => state.updateField);
+
+
+    const updateUser = async (
+        field: string,
+        value: string | boolean
+    ) => {
+        if (field === 'status') updateField('status', value as string);
+        if (field === 'need_drink') updateField('need_drink', value as boolean);
+        const { data } = await axiosInstance.post('change-status', {
+            status: field === 'status' ? value : user?.status,
+            need_drink: field === 'need_drink' ? value : user?.need_drink,
+        });
+        console.log(data);
+    }
 
     const handleLogout = async () => {
 
@@ -77,7 +93,7 @@ export default function HomeScreen() {
                         <TouchableOpacity
                             key={index}
                             onPress={() => {
-                                console.log(item.key);
+                                updateUser('status', item.key);
                             }}
                             style={[
                                 styles.listItem,
@@ -98,7 +114,9 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     ))}
                     <TouchableOpacity
-                        onPress={() => console.log(!user?.need_drink)}
+                        onPress={() => {
+                            updateUser('need_drink', !user?.need_drink);
+                        }}
                         style={[styles.listItem,{
                             borderColor: 'blue',
                             backgroundColor: user?.need_drink ? 'blue' : '#000'
