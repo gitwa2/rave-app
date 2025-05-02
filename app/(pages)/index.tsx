@@ -86,11 +86,10 @@ export default function HomeScreen() {
                     <Text style={styles.label}>Your name</Text>
                     <TextInput
                         style={styles.input}
-                        value={name}
-                        onChangeText={setName}
+                        value={name.replace(/[^a-zA-Z\s]/g, '')}
+                        onChangeText={(text) => setName(text.replace(/[^a-zA-Z\s]/g, ''))}
                         placeholder=""
                     />
-
                     <View style={styles.checkboxContainer}>
                         <TouchableOpacity
                             onPress={() => setHasGroupCode(!hasGroupCode)}
@@ -108,10 +107,10 @@ export default function HomeScreen() {
                             style={[styles.input, { textAlign: 'center' }]}
                             placeholder="Enter your party code"
                             placeholderTextColor="gray"
-                            maxLength={6}
+                            maxLength={4}
                             value={code}
                             onChangeText={(text) => {
-                                setCode(text);
+                                setCode(text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase());
                             }}
                         />
                     )}

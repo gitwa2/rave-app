@@ -33,21 +33,6 @@ axiosInstance.interceptors.request.use(
         if (user?.token) {
             config.headers['Authorization'] = `Bearer ${user.token}`;
         }
-
-        const requestKey = config.url;
-        const now = Date.now();
-
-        if (requestKey && requestCache.has(requestKey)) {
-            const lastRequestTime = requestCache.get(requestKey);
-            if (now - lastRequestTime < 800) {
-                return Promise.reject(); // Silently block the request
-            }
-        }
-
-        if (requestKey) {
-            requestCache.set(requestKey, now);
-        }
-
         return config;
     },
     error => {
