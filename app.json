@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "raveParty",
-    "slug": "raveParty",
+    "slug": "raveroom",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -36,6 +36,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c8b54268-d8b2-48a4-bf82-ac2ee8751867"
+      }
+    },
+    "owner": "iranphp"
   }
 }

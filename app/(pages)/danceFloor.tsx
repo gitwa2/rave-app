@@ -94,10 +94,11 @@ const styles = StyleSheet.create({
     grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        width: '85%',
+        width: '95%',
     },
     gridItem: {
         width: '33.33%',
+        height: '33.33%',
         aspectRatio: 1,
         justifyContent: 'center',
         alignItems: 'center',
