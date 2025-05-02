@@ -27,7 +27,7 @@ export default function RootLayout() {
                 const { data } = await axiosInstance.get('me');
                 setUser({ token: user.token, language: user.language || '', ...data });
 
-                if (pathname !== '/home') {
+                if (!['/home','/danceFloor'].includes(pathname)) {
                     router.replace('/home');
                 }
             } catch (error: any) {
@@ -61,6 +61,7 @@ export default function RootLayout() {
             <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(pages)/index" options={{ gestureEnabled: false }} />
                 <Stack.Screen name="(pages)/invite" />
+                <Stack.Screen name="(pages)/danceFloor" />
                 <Stack.Screen
                     name="(pages)/home"
                     options={{ gestureEnabled: false }}

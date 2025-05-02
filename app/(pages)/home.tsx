@@ -1,7 +1,8 @@
 import {View,ScrollView, Text, StyleSheet,Vibration, Alert, SafeAreaView,TouchableOpacity, Platform, StatusBar, Image} from 'react-native';
 import React, {useEffect, useState} from 'react';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import Tab from '@/components/Tab';
-import { useRouter } from 'expo-router';
+import Header from '@/components/Header';
 import useUserStore from "@/app/store/userStore";
 import axiosInstance from "@/app/axiosConfig";
 
@@ -15,9 +16,9 @@ interface Friend {
 export default function HomeScreen() {
     const [activeTab, setActiveTab] = useState('Home');
     const [friends, setFriends] = useState([] as Friend[]);
-    const router = useRouter();
     const user = useUserStore((state) => state.user);
     const updateField = useUserStore((state) => state.updateField);
+    const navigation = useNavigation<NavigationProp<Record<string, undefined>>>();
 
     const updateUser = async (
         field: string,
@@ -25,18 +26,21 @@ export default function HomeScreen() {
     ) => {
         if (field === 'status') updateField('status', value as string);
         if (field === 'need_drink') updateField('need_drink', value as boolean);
-        const { data } = await axiosInstance.post('change-status', {
+        await axiosInstance.post('change-status', {
             status: field === 'status' ? value : user?.status,
             need_drink: field === 'need_drink' ? value : user?.need_drink,
+            main_dance_floor_position: "",
+            second_dance_floor_position: "",
         });
-        console.log(data);
     }
 
-    const getMe= async () => {
+    const getMe = async () => {
         try {
             const { data } = await axiosInstance.get('me');
             updateField('status', data.status);
             updateField('need_drink', data.need_drink);
+            updateField('main_dance_floor_position', data.main_dance_floor_position);
+            updateField('second_dance_floor_position', data.second_dance_floor_position);
         } catch (error) {
             console.error('Failed to fetch user data:', error);
             Alert.alert('Error', 'Unable to fetch user data. Please try again later.');
@@ -70,57 +74,20 @@ export default function HomeScreen() {
         }
     }, [activeTab]);
 
-    const handleLogout = async () => {
-
-        if (Platform.OS === 'web') {
-            const confirm = window.confirm("Are you sure you want to log out?");
-            if (confirm) {
-                router.push('/');
-            }
-        } else {
-            Alert.alert(
-                "Confirm Logout",
-                "Are you sure you want to log out?",
-                [
-                    {
-                        text: "Cancel",
-                        style: "cancel",
-                    },
-                    {
-                        text: "Logout",
-                        onPress: async () => {
-                            router.push('/');
-                        },
-                        style: "destructive",
-                    },
-                ]
-            );
-        }
-    };
 
 
 
     const items = [
-        {key: 'Main', name: 'Main dance floor'},
-        {key: 'Second', name: 'Second dance floor'},
-        {key: 'Break', name: "I'm taking a break"},
-        {key: 'Home', name: "I'm going home"},
+        {key: 'Main', name: 'Main Dance Floor'},
+        {key: 'Second', name: 'Second Dance Floor'},
+        {key: 'Break', name: "I'm Taking a Break"},
+        {key: 'Home', name: "I'm Going Home"},
     ];
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={{ fontSize: 30, color: '#fff' }}>{user?.name?.replace(/\b\w/g, char => char.toUpperCase())}</Text>
-                    <Text style={{ fontSize: 30, color: 'red', paddingRight: 10, paddingLeft: 10 }}>
-                        {user?.code}
-                    </Text>
-                    <TouchableOpacity onPress={handleLogout}>
-                        <Image source={require('@/assets/images/logout.png')} style={{ alignSelf: 'center', width: 40, height: 40 }} />
-                    </TouchableOpacity>
-                </View>
-
-
+                <Header/>
                 {activeTab === 'Home' ? (
                 <View  style={styles.main}>
                     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -129,13 +96,17 @@ export default function HomeScreen() {
                             key={index}
                             onLongPress={() => {
                                 if(item.key === user?.status) {
-                                    console.log('Long press detected');
-                                    Vibration.vibrate([0, 100, 200, 100]);
+                                    if(['Main','Second'].includes(item.key)) {
+                                        navigation.navigate('(pages)/danceFloor');
+                                        console.log('Long press detected');
+                                        Vibration.vibrate([0, 100, 200, 100]);
+                                    }
                                 }
                             }}
                             onPress={() => {
                                 if(item.key === user?.status) return;
                                 updateUser('status', item.key);
+
                             }}
                             style={[
                                 styles.listItem,
@@ -148,11 +119,12 @@ export default function HomeScreen() {
                             <Text
                                 style={[
                                     styles.listItemText,
-                                    item.key === user?.status && { fontSize: 40, color: '#fff' },
+                                    item.key === user?.status && { fontSize: 30, color: '#fff' },
                                 ]}
                             >
                                 {item.name}
                             </Text>
+
                         </TouchableOpacity>
                     ))}
                     <TouchableOpacity
