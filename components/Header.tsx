@@ -6,13 +6,14 @@ import useUserStore from "@/app/store/userStore";
 export default function Header() {
 
     const user = useUserStore((state) => state.user);
+    const clearUser = useUserStore((state) => state.clearUser);
     const router = useRouter();
-
     const handleLogout = async () => {
 
         if (Platform.OS === 'web') {
             const confirm = window.confirm("Are you sure you want to log out?");
             if (confirm) {
+                clearUser();
                 router.push('/');
             }
         } else {
@@ -27,6 +28,7 @@ export default function Header() {
                     {
                         text: "Logout",
                         onPress: async () => {
+                            clearUser();
                             router.push('/');
                         },
                         style: "destructive",

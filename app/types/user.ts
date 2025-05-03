@@ -6,6 +6,6 @@ export interface UserData {
     status?: string;
     need_drink?: boolean;
     language?: string;
-    main_dance_floor_position?: string;
-    second_dance_floor_position?: string;
+    dance_floor_position?: string;
+    locker_code?: string;
 }

@@ -29,8 +29,7 @@ export default function HomeScreen() {
         await axiosInstance.post('change-status', {
             status: field === 'status' ? value : user?.status,
             need_drink: field === 'need_drink' ? value : user?.need_drink,
-            main_dance_floor_position: "",
-            second_dance_floor_position: "",
+            dance_floor_position: ""
         });
     }
 
@@ -39,8 +38,8 @@ export default function HomeScreen() {
             const { data } = await axiosInstance.get('me');
             updateField('status', data.status);
             updateField('need_drink', data.need_drink);
-            updateField('main_dance_floor_position', data.main_dance_floor_position);
-            updateField('second_dance_floor_position', data.second_dance_floor_position);
+            updateField('dance_floor_position', data.dance_floor_position);
+            updateField('locker_code', data.locker_code);
         } catch (error) {
             console.error('Failed to fetch user data:', error);
             Alert.alert('Error', 'Unable to fetch user data. Please try again later.');
@@ -119,7 +118,7 @@ export default function HomeScreen() {
                             <Text
                                 style={[
                                     styles.listItemText,
-                                    item.key === user?.status && { fontSize: 30, color: '#fff' },
+                                    item.key === user?.status && { fontSize: 38, color: '#fff' },
                                 ]}
                             >
                                 {item.name}

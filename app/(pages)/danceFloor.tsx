@@ -32,16 +32,13 @@ export default function DanceFloor() {
         setSelectedPosition(position);
 
         try {
-            const { data } = await axiosInstance.post('change-status', {
+            await axiosInstance.post('change-status', {
                 status: user?.status,
                 need_drink: user?.need_drink,
-                main_dance_floor_position: user?.status === 'Main' ? position : "",
-                second_dance_floor_position: user?.status === 'Second' ? position : "",
+                dance_floor_position: position,
             });
-
-            console.log('Status updated successfully:', data);
-
             navigation.navigate('(pages)/home');
+
         } catch (error) {
             console.error('Failed to update status:', error);
         }
@@ -65,7 +62,9 @@ export default function DanceFloor() {
                                 key={position.key}
                                 style={[
                                     styles.gridItem,
-                                    selectedPosition === position.key && { backgroundColor: 'red' },
+                                    (selectedPosition === position.key || user?.dance_floor_position === position.key) && {
+                                        backgroundColor: 'red',
+                                    },
                                 ]}
                                 onPress={() => handelSelectedPosition(position.key)}
                             >

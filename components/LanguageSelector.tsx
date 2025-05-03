@@ -28,6 +28,7 @@ export default function LanguageSelector() {
 const styles = StyleSheet.create({
     flagContainer: {
         flexDirection: 'row',
+        opacity: 0,
         marginTop: 40,
         paddingLeft: 20,
         width: '100%',
