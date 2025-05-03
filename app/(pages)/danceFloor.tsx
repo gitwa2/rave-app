@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import {View, Text,SafeAreaView, StyleSheet,ScrollView, TouchableOpacity, Platform, StatusBar} from 'react-native';
+import {View, Text,SafeAreaView,Image, StyleSheet,ScrollView, TouchableOpacity, Platform, StatusBar} from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import Header from '@/components/Header';
 import useUserStore from "@/app/store/userStore";
 import axiosInstance from "@/app/axiosConfig";
 
 const positions = [
-    { key: 'left-top', label: '↖️' },
-    { key: 'top', label: '⬆️' },
-    { key: 'right-top', label: '↗️' },
-    { key: 'left', label: '⬅️' },
-    { key: 'center', label: 'center' },
-    { key: 'right', label: '➡️' },
-    { key: 'left-bottom', label: '↙️' },
-    { key: 'bottom', label: '⬇️' },
-    { key: 'right-bottom', label: '↘️' },
+    { key: 'left-top', label: '↖️', icon: require('@/assets/images/top-left.png') },
+    { key: 'top', label: '⬆️', icon: require('@/assets/images/top.png') },
+    { key: 'right-top', label: '↗️', icon: require('@/assets/images/top-right.png') },
+    { key: 'left', label: '⬅️',icon: require('@/assets/images/left.png') },
+    { key: 'center', label: 'center',icon: require('@/assets/images/center.png') },
+    { key: 'right', label: '➡️',icon: require('@/assets/images/right.png') },
+    { key: 'left-bottom', label: '↙️', icon: require('@/assets/images/bottom-left.png') },
+    { key: 'bottom', label: '⬇️', icon: require('@/assets/images/bottom-center.png') },
+    { key: 'right-bottom', label: '↘️', icon: require('@/assets/images/bottom-right.png') },
 ];
 
 
@@ -50,10 +50,9 @@ export default function DanceFloor() {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <Header/>
-                <Text style={[styles.text, { fontSize: 35, marginTop:20, marginBottom: 10 }]}>{user?.status && status[user.status as keyof typeof status]}</Text>
-                <Text style={[styles.text, { fontSize: 24, marginBottom: 10 }]}>🔊 DJ 🔊</Text>
-                <View style={{width:150,height:4,backgroundColor:'#fff', borderRadius:100,marginBottom:10}}></View>
-                <Text style={[styles.text, { fontSize: 14,color:'red' }]}>Your position</Text>
+                <Text style={[styles.text, { fontSize: 25, marginTop:20, marginBottom: 10 }]}>{user?.status && status[user.status as keyof typeof status]}</Text>
+                <Image source={require('@/assets/images/dj.png')} style={{ width: 149, height: 108.52, marginBottom: 20 }} />
+                <Text style={[styles.text, { fontSize: 20,color:'red' }]}>Your position</Text>
 
                 <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <View style={styles.grid}>
@@ -68,8 +67,7 @@ export default function DanceFloor() {
                                 ]}
                                 onPress={() => handelSelectedPosition(position.key)}
                             >
-                                <Text style={styles.text}>{position.label}</Text>
-                                <Text style={[styles.positionText, selectedPosition === position.key && { color: 'white' }]}>{position.key}</Text>
+                                <Image source={position.icon} style={{ width: 50, height: 50 }} />
                             </TouchableOpacity>
                         ))}
                     </View>

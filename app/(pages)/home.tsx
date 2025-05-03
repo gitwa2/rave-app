@@ -1,10 +1,21 @@
-import {View,ScrollView, Text, StyleSheet,Vibration, Alert, SafeAreaView,TouchableOpacity, Platform, StatusBar, Image} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {
+    View,
+    ScrollView,
+    Text,
+    StyleSheet,
+    Vibration,
+    Alert,
+    SafeAreaView,
+    TouchableOpacity,
+    Platform,
+    StatusBar, Image
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import Tab from '@/components/Tab';
 import Header from '@/components/Header';
-import useUserStore from "@/app/store/userStore";
-import axiosInstance from "@/app/axiosConfig";
+import useUserStore from '@/app/store/userStore';
+import axiosInstance from '@/app/axiosConfig';
 
 interface Friend {
     id: number;
@@ -15,23 +26,21 @@ interface Friend {
 
 export default function HomeScreen() {
     const [activeTab, setActiveTab] = useState('Home');
-    const [friends, setFriends] = useState([] as Friend[]);
+    const [friends, setFriends] = useState<Friend[]>([]);
     const user = useUserStore((state) => state.user);
     const updateField = useUserStore((state) => state.updateField);
     const navigation = useNavigation<NavigationProp<Record<string, undefined>>>();
 
-    const updateUser = async (
-        field: string,
-        value: string | boolean
-    ) => {
+    const updateUser = async (field: string, value: string | boolean) => {
         if (field === 'status') updateField('status', value as string);
         if (field === 'need_drink') updateField('need_drink', value as boolean);
-        await axiosInstance.post('change-status', {
+        const {data} = await axiosInstance.post('change-status', {
             status: field === 'status' ? value : user?.status,
             need_drink: field === 'need_drink' ? value : user?.need_drink,
-            dance_floor_position: ""
+            dance_floor_position: ''
         });
-    }
+        updateField('dance_floor_position', '');
+    };
 
     const getMe = async () => {
         try {
@@ -44,7 +53,7 @@ export default function HomeScreen() {
             console.error('Failed to fetch user data:', error);
             Alert.alert('Error', 'Unable to fetch user data. Please try again later.');
         }
-    }
+    };
 
     const getFriends = async () => {
         try {
@@ -66,118 +75,147 @@ export default function HomeScreen() {
     };
 
     useEffect(() => {
-        if(activeTab==='Friends'){
-            getFriends();
-        }else {
-            getMe();
-        }
+        activeTab === 'Friends' ? getFriends() : getMe();
     }, [activeTab]);
 
-
-
-
     const items = [
-        {key: 'Main', name: 'Main Dance Floor'},
-        {key: 'Second', name: 'Second Dance Floor'},
-        {key: 'Break', name: "I'm Taking a Break"},
-        {key: 'Home', name: "I'm Going Home"},
+        { key: 'Main', name: 'Main Floor' },
+        { key: 'Second', name: 'Second Floor' },
+        { key: 'Break', name: 'Break' },
+        { key: 'Home', name: 'Home' }
     ];
+
+    const danceFloorImages: Record<string, any> = {
+        'center': require('@/assets/images/center.png'),
+        'left': require('@/assets/images/left.png'),
+        'right': require('@/assets/images/right.png'),
+        'top': require('@/assets/images/top.png'),
+        'left-top': require('@/assets/images/top-left.png'),
+        'right-top': require('@/assets/images/top-right.png'),
+        'left-bottom': require('@/assets/images/bottom-left.png'),
+        'right-bottom': require('@/assets/images/bottom-right.png'),
+        'bottom': require('@/assets/images/bottom-center.png'),
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Header/>
+                <Header />
                 {activeTab === 'Home' ? (
-                <View  style={styles.main}>
-                    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    {items.map((item, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            onLongPress={() => {
-                                if(item.key === user?.status) {
-                                    if(['Main','Second'].includes(item.key)) {
-                                        navigation.navigate('(pages)/danceFloor');
-                                        console.log('Long press detected');
-                                        Vibration.vibrate([0, 100, 200, 100]);
-                                    }
-                                }
-                            }}
-                            onPress={() => {
-                                if(item.key === user?.status) return;
-                                updateUser('status', item.key);
-
-                            }}
-                            style={[
-                                styles.listItem,
-                                {
-                                    backgroundColor: item.key === user?.status ? 'red' : '#000',
-                                    borderColor: item.key === user?.status ? 'red' : '#444',
-                                },
-                            ]}
-                        >
-                            <Text
-                                style={[
-                                    styles.listItemText,
-                                    item.key === user?.status && { fontSize: 38, color: '#fff' },
-                                ]}
-                            >
-                                {item.name}
-                            </Text>
-
-                        </TouchableOpacity>
-                    ))}
-                    <TouchableOpacity
-                        onPress={() => {
-                            updateUser('need_drink', !user?.need_drink);
-                        }}
-                        style={[styles.listItem,{
-                            borderColor: 'blue',
-                            backgroundColor: user?.need_drink ? 'blue' : '#000'
-                        }]}
-                    >
-                        <Text style={[
-                            styles.listItemText,{
-                                color: user?.need_drink ? '#fff' : '#999',
-                                fontSize: user?.need_drink ? 30 : 25,
-                            }
-                        ]}>💧 Water, please</Text>
-                    </TouchableOpacity>
-                </ScrollView>
-                </View>
-                ): (<View  style={styles.main}>
-                    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-                        {friends.length === 0 ? (
-                            <Text style={[styles.text,{fontSize: 30}]}>Share the invite code
-                                {' '} <Text style={{backgroundColor:'red',paddingRight:10,paddingLeft:10,marginLeft:8,marginRight:8}}>{user?.code}</Text> {' '}
-                                with your friends to join the rave group.</Text>
-                        ) : (
-
-                            (friends.map((friend: Friend, index: number) => (
+                    <View style={styles.main}>
+                        <ScrollView contentContainerStyle={styles.scrollContainer}>
+                            {items.map((item, index) => (
                                 <TouchableOpacity
                                     key={index}
-                                    onPress={() => console.log(friend.id.toString())}
                                     onLongPress={() => {
-                                        gettingWater(friend.id);
-                                        Vibration.vibrate([0, 100, 200, 100]);
+                                        if (item.key === user?.status && ['Main', 'Second'].includes(item.key)) {
+                                            navigation.navigate('(pages)/danceFloor');
+                                            Vibration.vibrate([0, 100, 200, 100]);
+                                        }
+                                    }}
+                                    onPress={() => {
+                                        if (item.key !== user?.status) updateUser('status', item.key);
                                     }}
                                     style={[
-                                        styles.friendItem,
-                                        {justifyContent:'space-between',flexDirection:'row'}
+                                        styles.statusButton,
+                                        {
+                                            backgroundColor: item.key === user?.status ? 'red' : '#000',
+                                            borderColor: item.key === user?.status ? 'red' : '#444'
+                                        }
                                     ]}
                                 >
-                                    <Text style={[styles.friendItemText]}>{friend.name}</Text>
-                                    <Text style={[styles.friendItemText]}>{friend.status || '#'}{friend.need_drink?('💧'):''}</Text>
+                                    <Text style={styles.statusText}>{item.name}</Text>
+
+                                    {user?.need_drink && item.key === user?.status && (<View style={styles.statusIconBlue}>
+                                        <Text style={{fontSize:25}}>🥵</Text>
+                                    </View>)}
+
+
+                                    {item.key === user?.status && user?.dance_floor_position && (<View style={styles.statusIconGray}>
+                                        <Image source={danceFloorImages[user?.dance_floor_position || '']} style={{ alignSelf: 'center', width: 25, height: 25 }} />
+                                    </View>)}
 
                                 </TouchableOpacity>
-                            )))
+                            ))}
 
-                        )}
+                            <TouchableOpacity
+                                onPress={() => updateUser('need_drink', !user?.need_drink)}
+                                style={[
+                                    styles.waterButton,
+                                    {
+                                        backgroundColor: user?.need_drink ? 'blue' : '#000',
+                                        borderColor: 'blue',
+                                        marginTop:10
+                                    }
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.waterButtonText,
+                                        { color: user?.need_drink ? '#fff' : '#999' }
+                                    ]}
+                                >
+                                    💧 Water, please
+                                </Text>
+                            </TouchableOpacity>
 
-                    </ScrollView>
-                </View>)}
+                            <TouchableOpacity
+                                style={[styles.statusButton, { backgroundColor: '#000', marginTop: 40, borderColor: '#444' }]}
+                                onPress={() => Alert.prompt(
+                                    "Locker Code",
+                                    "Enter your locker code:",
+                                    [
+                                        {
+                                            text: "Cancel",
+                                            style: "cancel"
+                                        },
+                                        {
+                                            text: "Submit",
+                                            onPress: (code) => console.log("Locker Code:", code)
+                                        }
+                                    ],
+                                    "plain-text"
+                                )}
+                            >
+                                <Text style={[styles.statusText, { fontSize: 16, textAlign: 'center' }]}>Locker Code ?</Text>
+                                <View style={styles.statusIconGray}>
+                                    <Image source={require('@/assets/images/locker.png')} style={{ alignSelf: 'center', width: 25, height: 25 }} />
+                                </View>
+                            </TouchableOpacity>
 
-
+                        </ScrollView>
+                    </View>
+                ) : (
+                    <View style={styles.main}>
+                        <ScrollView contentContainerStyle={styles.scrollContainer}>
+                            {friends.length === 0 ? (
+                                <Text style={styles.inviteText}>
+                                    Share the invite code{' '}
+                                    <Text style={styles.codeHighlight}>{user?.code}</Text>{' '}
+                                    with your friends to join the rave group.
+                                </Text>
+                            ) : (
+                                friends.map((friend, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        onPress={() => console.log(friend.id.toString())}
+                                        onLongPress={() => {
+                                            gettingWater(friend.id);
+                                            Vibration.vibrate([0, 100, 200, 100]);
+                                        }}
+                                        style={styles.friendItem}
+                                    >
+                                        <Text style={styles.friendText}>{friend.name}</Text>
+                                        <Text style={styles.friendText}>
+                                            {friend.status || '#'}
+                                            {friend.need_drink ? '💧' : ''}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))
+                            )}
+                        </ScrollView>
+                    </View>
+                )}
                 <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
             </View>
         </SafeAreaView>
@@ -188,61 +226,95 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: 'black',
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
     },
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'black',
-    },
-    header: {
-        backgroundColor: '#222',
-        height: 100,
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingLeft: 20,
-        paddingRight: 20,
+        backgroundColor: 'black'
     },
     main: {
         width: '100%',
         flex: 1,
-        padding:20
+        padding: 20
     },
-    listItem: {
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    statusButton: {
+        borderWidth: 2,
+        marginBottom: 6,
+        minHeight: 54,
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    statusText: {
+        fontSize: 25,
+        paddingHorizontal: 8,
+        color: '#fff',
+        fontFamily: 'SpaceMono',
+        flexGrow: 1,
+        flexShrink: 1,
+        flexWrap: 'wrap'
+    },
+    statusIconBlue: {
+        width: 50,
+        height: 50,
+        backgroundColor: 'blue',
+        flexShrink: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    statusIconGray: {
+        width: 50,
+        height: 50,
+        backgroundColor: '#333',
+        flexShrink: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    waterButton: {
         marginBottom: 10,
         width: '100%',
         alignItems: 'center',
-        borderWidth:2,
-        borderColor:'#444',
+        borderWidth: 2
     },
-    friendItem:{
+    waterButtonText: {
+        padding: 8,
+        fontSize: 25,
+        fontFamily: 'SpaceMono'
+    },
+    friendItem: {
         marginBottom: 10,
         width: '100%',
-        alignItems: 'center',
-        borderWidth:2,
-        paddingRight:10,
-        paddingLeft:10,
-        borderColor:'#444',
+        borderWidth: 2,
+        borderColor: '#444',
+        paddingHorizontal: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
-    friendItemText:{
+    friendText: {
         color: '#fff',
         padding: 10,
         fontSize: 25,
-        fontFamily: 'SpaceMono',
+        fontFamily: 'SpaceMono'
     },
-    listItemText:{
-        color: '#888',
-        padding: 10,
-        fontSize: 25,
-        fontFamily: 'SpaceMono',
-    },
-    text: {
+    inviteText: {
         color: 'white',
-        fontSize: 24,
+        fontSize: 30,
         margin: 30,
         fontFamily: 'SpaceMono',
+        textAlign: 'center'
     },
+    codeHighlight: {
+        backgroundColor: 'red',
+        paddingHorizontal: 10,
+        marginHorizontal: 8
+    }
 });
