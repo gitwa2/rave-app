@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Alert, Platform } from 'react-native';
 import useUserStore from '@/app/store/userStore';
+import { useRouter } from 'expo-router';
 
 const axiosInstance = axios.create({
     baseURL: 'https://raverom.top/api/',
@@ -9,48 +10,43 @@ const axiosInstance = axios.create({
     },
 });
 
-const requestCache = new Map();
+const router = useRouter();
 
-
-axiosInstance.interceptors.response.use(
-    response => response, // Pass through successful responses
-    async error => {
-        if (error?.response?.status === 401) {
-            useUserStore.getState().clearUser();
-            if (Platform.OS === 'web') {
-                window.location.href = '/'; // Navigate to root for web
-            } else {
-                Alert.alert('Session Expired', 'You have been logged out.');
-            }
-        }
-        return Promise.reject(error);
-    }
-);
-
+// Request Interceptor
 axiosInstance.interceptors.request.use(
     async config => {
-        const user = useUserStore.getState().user; // Access user from userStore
+        const user = useUserStore.getState().user;
         if (user?.token) {
             config.headers['Authorization'] = `Bearer ${user.token}`;
         }
         return config;
     },
-    error => {
-        return Promise.reject(error);
-    }
+    error => Promise.reject(error)
 );
 
+// Response Interceptor
 axiosInstance.interceptors.response.use(
-    response => response, // Pass through successful responses
-    error => {
-        if (error && error.response && error.response.status === 400) {
+    response => response,
+    async error => {
+        const status = error?.response?.status;
+
+        if (status === 401) {
+            useUserStore.getState().clearUser();
+            if (Platform.OS === 'web') {
+                window.location.href = '/';
+            } else {
+                Alert.alert('Session Expired', 'You have been logged out.');
+                router.push('/');
+            }
+        } else if (status === 400) {
             const errorMessage = error.response.data?.error || 'Bad Request';
             if (Platform.OS === 'ios' || Platform.OS === 'android') {
                 Alert.alert('Error', errorMessage);
             } else {
-                alert(errorMessage); // Fallback for web
+                alert(errorMessage);
             }
         }
+
         return Promise.reject(error);
     }
 );

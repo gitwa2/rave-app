@@ -2,6 +2,7 @@ import {Alert, Image, Platform, StyleSheet, Text, TouchableOpacity, View} from "
 import React from "react";
 import {useRouter} from "expo-router";
 import useUserStore from "@/app/store/userStore";
+import axiosInstance from "@/app/axiosConfig";
 
 export default function Header() {
 
@@ -28,8 +29,15 @@ export default function Header() {
                     {
                         text: "Logout",
                         onPress: async () => {
-                            clearUser();
-                            router.push('/');
+                            try {
+                                await axiosInstance.get('logout');
+                                clearUser();
+                                router.push('/');
+                            } catch (error) {
+                                console.error('Failed to log out:', error);
+                                Alert.alert('Error', 'Unable to log out. Please try again later.');
+                            }
+
                         },
                         style: "destructive",
                     },

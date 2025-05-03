@@ -22,6 +22,8 @@ interface Friend {
     name: string;
     status: string;
     need_drink: boolean;
+    dance_floor_position: string;
+    locker_code: string;
 }
 
 export default function HomeScreen() {
@@ -37,9 +39,9 @@ export default function HomeScreen() {
         const {data} = await axiosInstance.post('change-status', {
             status: field === 'status' ? value : user?.status,
             need_drink: field === 'need_drink' ? value : user?.need_drink,
-            dance_floor_position: ''
+            dance_floor_position: field === 'need_drink'? user?.dance_floor_position : '',
         });
-        updateField('dance_floor_position', '');
+        updateField('dance_floor_position', data.dance_floor_position);
     };
 
     const getMe = async () => {
@@ -50,7 +52,7 @@ export default function HomeScreen() {
             updateField('dance_floor_position', data.dance_floor_position);
             updateField('locker_code', data.locker_code);
         } catch (error) {
-            console.error('Failed to fetch user data:', error);
+            console.error('status error:', (error as any)?.status);
             Alert.alert('Error', 'Unable to fetch user data. Please try again later.');
         }
     };
@@ -64,6 +66,15 @@ export default function HomeScreen() {
             Alert.alert('Error', 'Unable to fetch friends. Please try again later.');
         }
     };
+
+    const setLockerCode = async (code: string) => {
+        try {
+            await axiosInstance.post('locker-code', { locker_code: code });
+            updateField('locker_code', code);
+        } catch (error) {
+            console.error('Error while setting locker code:', error);
+        }
+    }
 
     const gettingWater = async (id: number) => {
         try {
@@ -171,13 +182,21 @@ export default function HomeScreen() {
                                         },
                                         {
                                             text: "Submit",
-                                            onPress: (code) => console.log("Locker Code:", code)
+                                            onPress: (code) => {
+                                                if (!code || code.length > 10) {
+                                                    Alert.alert('Error', 'Locker code must be 10 characters or less.');
+                                                    return;
+                                                }
+                                                setLockerCode(code);
+                                            },
                                         }
                                     ],
                                     "plain-text"
                                 )}
                             >
-                                <Text style={[styles.statusText, { fontSize: 16, textAlign: 'center' }]}>Locker Code ?</Text>
+                                <Text style={[styles.statusText, { fontSize: 16, textAlign: 'center' }]}>
+                                     {user?.locker_code===''?  'Locker Code ?':`Locker Code : ${user?.locker_code}`}
+                                </Text>
                                 <View style={styles.statusIconGray}>
                                     <Image source={require('@/assets/images/locker.png')} style={{ alignSelf: 'center', width: 25, height: 25 }} />
                                 </View>
@@ -195,23 +214,36 @@ export default function HomeScreen() {
                                     with your friends to join the rave group.
                                 </Text>
                             ) : (
+
                                 friends.map((friend, index) => (
-                                    <TouchableOpacity
-                                        key={index}
-                                        onPress={() => console.log(friend.id.toString())}
-                                        onLongPress={() => {
-                                            gettingWater(friend.id);
-                                            Vibration.vibrate([0, 100, 200, 100]);
-                                        }}
-                                        style={styles.friendItem}
-                                    >
-                                        <Text style={styles.friendText}>{friend.name}</Text>
-                                        <Text style={styles.friendText}>
-                                            {friend.status || '#'}
-                                            {friend.need_drink ? '💧' : ''}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))
+                                        <TouchableOpacity
+                                            key={index}
+                                            style={[
+                                                styles.statusButton,
+                                                {
+                                                    borderColor: '#444'
+                                                }
+                                            ]}
+                                        >
+                                            <Text style={styles.statusText}>{friend.name}</Text>
+                                            <Text style={[
+                                                styles.statusText,
+                                                {fontSize: 20}
+                                            ]}>{friend.status}</Text>
+
+                                            {friend?.need_drink && (<View style={styles.statusIconBlue}>
+                                                <Text style={{fontSize:25}}>🥵</Text>
+                                            </View>)}
+
+
+                                            {friend?.dance_floor_position !== '' && (<View style={styles.statusIconGray}>
+                                                <Image source={danceFloorImages[friend?.dance_floor_position || '']} style={{ alignSelf: 'center', width: 25, height: 25 }} />
+                                            </View>)}
+
+
+                                        </TouchableOpacity>
+                                    ))
+
                             )}
                         </ScrollView>
                     </View>
