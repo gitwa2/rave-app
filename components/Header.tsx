@@ -47,7 +47,7 @@ export default function Header() {
     };
 
     return (<View style={styles.header}>
-        <Text style={{ fontSize: 30, color: '#fff' }}>{user?.name?.replace(/\b\w/g, char => char.toUpperCase())}</Text>
+        <Text style={{ fontSize: 20, color: '#fff' }}>{user?.name?.replace(/\b\w/g, char => char.toUpperCase())}</Text>
         <Text style={{ fontSize: 30, color: 'red', paddingRight: 10, paddingLeft: 10 }}>
             {user?.code}
         </Text>
