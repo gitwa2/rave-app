@@ -18,11 +18,14 @@ export default function RootLayout() {
 
     const user = useUserStore((state) => state.user);
     const setUser = useUserStore((state) => state.setUser);
+    const clearUser = useUserStore((state) => state.clearUser);
+
     const router = useRouter();
     const pathname = usePathname();
 
     const fetchUserData = async () => {
         if (user?.token) {
+            console.log('token',user?.token);
             try {
                 const { data } = await axiosInstance.get('me');
                 setUser({ token: user.token, language: user.language || '', ...data });
@@ -31,26 +34,30 @@ export default function RootLayout() {
                     router.replace('/home');
                 }
             } catch (error: any) {
-                if (error.response?.status === 401) {
-                    if (pathname !== '/') {
-                        router.replace('/');
-                    }
-                } else {
-                    console.error('Error fetching user data:', error);
+                clearUser();
+                if (pathname !== '/') {
+                    router.replace('/');
+
                 }
             }
         }
     };
 
     useEffect(() => {
-        fetchUserData();
-    }, [pathname]);
+        if (loaded) {
+            fetchUserData();
+        }
+    }, [pathname, loaded]);
 
     useEffect(() => {
         if (loaded) {
             SplashScreen.hideAsync();
         }
     }, [loaded]);
+
+
+
+
 
     if (!loaded) {
         return null;

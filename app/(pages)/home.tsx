@@ -138,7 +138,7 @@ export default function HomeScreen() {
                                     <Text style={styles.statusText}>{item.name}</Text>
 
                                     {user?.need_drink && item.key === user?.status && (<View style={styles.statusIconBlue}>
-                                        <Text style={{fontSize:25}}>🥵</Text>
+                                        <Text style={{fontSize:25}}>💧</Text>
                                     </View>)}
 
 
@@ -150,13 +150,15 @@ export default function HomeScreen() {
                             ))}
 
                             <TouchableOpacity
+                                disabled={user?.status === ''}
                                 onPress={() => updateUser('need_drink', !user?.need_drink)}
                                 style={[
                                     styles.waterButton,
                                     {
                                         backgroundColor: user?.need_drink ? 'blue' : '#000',
                                         borderColor: 'blue',
-                                        marginTop:10
+                                        marginTop:10,
+                                        opacity: user?.status === '' ? 0.4 : 1,
                                     }
                                 ]}
                             >
@@ -232,7 +234,7 @@ export default function HomeScreen() {
                                             ]}>{friend.status}</Text>
 
                                             {friend?.need_drink && (<View style={styles.statusIconBlue}>
-                                                <Text style={{fontSize:25}}>🥵</Text>
+                                                <Text style={{fontSize:25}}>💧</Text>
                                             </View>)}
 
 

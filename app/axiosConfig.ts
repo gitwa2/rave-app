@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
     },
 });
 
-const router = useRouter();
+
 
 // Request Interceptor
 axiosInstance.interceptors.request.use(
@@ -25,11 +25,13 @@ axiosInstance.interceptors.request.use(
 );
 
 // Response Interceptor
+
+const router = useRouter();
+
 axiosInstance.interceptors.response.use(
     response => response,
     async error => {
         const status = error?.response?.status;
-
         if (status === 401) {
             useUserStore.getState().clearUser();
             if (Platform.OS === 'web') {

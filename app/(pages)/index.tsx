@@ -58,7 +58,7 @@ export default function HomeScreen() {
             });
             navigation.navigate('(pages)/invite');
         } catch (error) {
-            console.error('Registration failed:', error);
+            console.error('Registration:', error);
         }
     };
 
@@ -89,6 +89,7 @@ export default function HomeScreen() {
                         value={name.replace(/[^a-zA-Z\s]/g, '')}
                         onChangeText={(text) => setName(text.replace(/[^a-zA-Z\s]/g, ''))}
                         placeholder=""
+                        autoComplete="off"
                     />
                     <View style={styles.checkboxContainer}>
                         <TouchableOpacity
