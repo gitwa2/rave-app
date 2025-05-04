@@ -226,6 +226,10 @@ export default function HomeScreen() {
                                                     borderColor: '#444'
                                                 }
                                             ]}
+                                            onLongPress={() => {
+                                                gettingWater(friend.id);
+                                                Alert.alert('Success', 'You got water from ' + friend.name + '!');
+                                            }}
                                         >
                                             <Text style={styles.statusText}>{friend.name}</Text>
                                             <Text style={[
