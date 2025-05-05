@@ -172,37 +172,41 @@ export default function HomeScreen() {
                                 </Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={[styles.statusButton, { backgroundColor: '#000', marginTop: 40, borderColor: '#444' }]}
-                                onPress={() => Alert.prompt(
-                                    "Locker Code",
-                                    "Enter your locker code:",
-                                    [
-                                        {
-                                            text: "Cancel",
-                                            style: "cancel"
-                                        },
-                                        {
-                                            text: "Submit",
-                                            onPress: (code) => {
-                                                if (!code || code.length > 10) {
-                                                    Alert.alert('Error', 'Locker code must be 10 characters or less.');
-                                                    return;
-                                                }
-                                                setLockerCode(code);
+                            {Platform.OS !== 'android' && (
+                                <TouchableOpacity
+                                    style={[styles.statusButton, { backgroundColor: '#000', marginTop: 40, borderColor: '#444' }]}
+                                    onPress={() => Alert.prompt(
+                                        "Locker Code",
+                                        "Enter your locker code:",
+                                        [
+                                            {
+                                                text: "Cancel",
+                                                style: "cancel"
                                             },
-                                        }
-                                    ],
-                                    "plain-text"
-                                )}
-                            >
-                                <Text style={[styles.statusText, { fontSize: 16, textAlign: 'center' }]}>
-                                     {user?.locker_code===''?  'Locker Code ?':`Locker Code : ${user?.locker_code}`}
-                                </Text>
-                                <View style={styles.statusIconGray}>
-                                    <Image source={require('@/assets/images/locker.png')} style={{ alignSelf: 'center', width: 25, height: 25 }} />
-                                </View>
-                            </TouchableOpacity>
+                                            {
+                                                text: "Submit",
+                                                onPress: (code) => {
+                                                    if (!code || code.length > 10) {
+                                                        Alert.alert('Error', 'Locker code must be 10 characters or less.');
+                                                        return;
+                                                    }
+                                                    setLockerCode(code);
+                                                },
+                                            }
+                                        ],
+                                        "plain-text"
+                                    )}
+                                >
+                                    <Text style={[styles.statusText, { fontSize: 16, textAlign: 'center' }]}>
+                                        {user?.locker_code === '' ? 'Locker Code ?' : `Locker Code : ${user?.locker_code}`}
+                                    </Text>
+                                    <View style={styles.statusIconGray}>
+                                        <Image source={require('@/assets/images/locker.png')} style={{ alignSelf: 'center', width: 25, height: 25 }} />
+                                    </View>
+                                </TouchableOpacity>
+                            )}
+
+
 
                         </ScrollView>
                     </View>
