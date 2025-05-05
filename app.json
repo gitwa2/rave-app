@@ -24,6 +24,11 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+    "build": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "plugins": [
       "expo-router",
       [

@@ -24,6 +24,7 @@ interface Friend {
     need_drink: boolean;
     dance_floor_position: string;
     locker_code: string;
+    last_update: string;
 }
 
 export default function HomeScreen() {
@@ -197,7 +198,7 @@ export default function HomeScreen() {
                                         "plain-text"
                                     )}
                                 >
-                                    <Text style={[styles.statusText, { fontSize: 16, textAlign: 'center' }]}>
+                                    <Text style={[styles.statusText, { fontSize: 18, textAlign: 'center' }]}>
                                         {user?.locker_code === '' ? 'Locker Code ?' : `Locker Code : ${user?.locker_code}`}
                                     </Text>
                                     <View style={styles.statusIconGray}>
@@ -227,7 +228,8 @@ export default function HomeScreen() {
                                             style={[
                                                 styles.statusButton,
                                                 {
-                                                    borderColor: '#444'
+                                                    borderColor: '#444',
+                                                    marginBottom: 24
                                                 }
                                             ]}
                                             onLongPress={() => {
@@ -249,6 +251,8 @@ export default function HomeScreen() {
                                             {friend?.dance_floor_position !== '' && (<View style={styles.statusIconGray}>
                                                 <Image source={danceFloorImages[friend?.dance_floor_position || '']} style={{ alignSelf: 'center', width: 25, height: 25 }} />
                                             </View>)}
+
+                                            <Text style={{color:'#999',position:'absolute',bottom:-12,left:2,fontSize:14,paddingLeft:10,paddingRight:10,backgroundColor:'#000'}}>{friend?.last_update}</Text>
 
 
                                         </TouchableOpacity>
@@ -296,7 +300,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     statusText: {
-        fontSize: 25,
+        fontSize: 35,
         paddingHorizontal: 8,
         color: '#fff',
         fontFamily: 'SpaceMono',
@@ -328,7 +332,7 @@ const styles = StyleSheet.create({
     },
     waterButtonText: {
         padding: 8,
-        fontSize: 25,
+        fontSize: 30,
         fontFamily: 'SpaceMono'
     },
     friendItem: {
